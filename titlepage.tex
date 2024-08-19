@@ -1,0 +1,269 @@
+% Just in case somebody should ever dare to touch those lines: Here's an explanation for provideauthors. The other commands provide... are constructed analogously.
+%Please study the code block in main.tex that defines createauthor, createinstitute, first.
+%Again, createinstitute is defined similarly to createauthor. On every call of createauthor{}{}{}{} a counter (starting at 0) is increased by 1 and the author's information is stored as a new command that looks like #name, #institute, ... for # in the naturals.
+%Back to these commands: Provideauthors is defined recursively and adds 1name, 2name, 3name, ... to the authors as long as there are authors. All the \csname\endcsname commands are used to tell LaTeX to interpret it's content as a string and then consider it as a command. Otherwise, LaTeX won't understand commands like \1name, ....
+
+\newcount\authorcounter
+\newcommand{\provideauthors}{%
+		\ifnum\authorcounter<\theauthorcount%if there is at least one more author to come
+			\csname\the\authorcounter name\endcsname% output the current authorname 
+			\expandafter\ifx\csname\the\authorcounter thanks\endcsname\empty%if thanks are not empty for that author, 
+			\else
+				\thanks{\csname\the\authorcounter thanks\endcsname}% outputs thanks
+			\fi%
+			\inst{\csname\the\authorcounter institute\endcsname} % add institute number to author.
+			\and %places a , between authors and an ", and" between the last two (only for lncs)
+			\global\advance\authorcounter by 1 % increase the counter that keeps track of how many authors have been placed
+			\provideauthors%run provideauthors again
+		\else% i.e. the current author is the last one. (Same code as above, but no \and after placing the author
+			\csname\the\authorcounter name\endcsname % output the current authorname
+			\expandafter\ifx\csname\the\authorcounter thanks\endcsname\empty %if thanks are not empty for that author, 
+			\else
+				\thanks{\csname\the\authorcounter thanks\endcsname} % outputs thanks
+			\fi%
+			\inst{\csname\the\authorcounter institute\endcsname} % add institute number to author.
+		\fi
+}
+
+\def\atleastoneauthorplaced{0}
+\newcommand{\providerunning}{%
+	\ifnum\authorcounter<\theauthorcount%
+		\expandafter\ifx\csname\the\authorcounter running\endcsname\empty
+		\else
+			\ifnum\authorcounter>1
+				\ifnum\atleastoneauthorplaced=1
+					\and%
+				\fi
+			\fi
+			\csname\the\authorcounter running\endcsname
+			\def\atleastoneauthorplaced{1}
+		\fi
+		\global\advance\authorcounter by 1
+		\providerunning%
+	\else%
+		\expandafter\ifx\csname\the\authorcounter running\endcsname\empty
+		\else
+			\ifnum\authorcounter>1
+				\ifnum\atleastoneauthorplaced=1
+					\and%
+				\fi
+			\fi
+			\csname\the\authorcounter running\endcsname
+		\fi
+	\fi
+}
+
+\newcount\institutecounter
+
+\newcommand{\provideinstitutes}{%
+	\ifnum\institutecounter<\theinstitutecount%
+		\ifnum\llncs=0
+			$^{\csname\the\institutecounter number\endcsname}$
+		\fi
+		\csname\the\institutecounter instname\endcsname
+		
+		\email{
+			\ifx\contactmail\empty
+				\csname\the\institutecounter mail\endcsname
+			\else
+				\href{mailto:\contactmail}{\csname\the\institutecounter mail\endcsname}
+			\fi
+		}
+		
+		\and%
+			\global\advance\institutecounter by 1
+		\provideinstitutes%
+	\else%
+		\ifnum\llncs=0
+			\ifcsname 1name\endcsname
+				$^{\csname\the\institutecounter number\endcsname}$
+			\fi
+		\fi
+		\csname\the\institutecounter instname\endcsname
+		
+		\email{
+			\ifx\contactmail\empty
+				\csname\the\institutecounter mail\endcsname
+			\else
+				\href{mailto:\contactmail}{\csname\the\institutecounter mail\endcsname}
+			\fi
+		}
+	\fi
+}
+
+\title{
+	\ifnum\stuffedtitlepage=1
+		\ifnum\llncs=1
+			\vspace*{-7ex}
+		\else
+		\vspace*{-3ex}
+		\fi
+		\textbf{\titletext}
+		\ifnum\llncs=1
+			\vspace*{-2ex}
+		\else
+			\vspace*{-1ex}
+		\fi
+	\else
+		\textbf{\titletext}
+	\fi
+}
+\ifnum\anonymous=1
+	\author{}
+\else
+	\ifnum\llncs=0
+		\newcommand{\inst}[1]{{
+			\ifcsname 1name\endcsname
+				$^{#1}$
+			\fi
+			}}
+	\fi
+	\ifcsname 1name\endcsname
+		\author{
+			\global\authorcounter 1
+			\provideauthors
+		}
+	\fi
+\fi
+
+\ifnum\llncs=1
+	\titlerunning{\runningtitle}
+	\ifnum\anonymous=1
+		\institute{}
+		\authorrunning{}
+	\else
+		\ifcsname 1instname\endcsname{
+			\institute{
+				\global\institutecounter 1
+				\provideinstitutes
+			}
+		\fi
+		\ifcsname 1name\endcsname{
+			\authorrunning{
+				\global \authorcounter 1
+				\providerunning
+			}
+		\fi
+	\fi
+\fi
+\maketitle
+\ifnum\stuffedtitlepage=1
+	\ifnum\llncs=0
+		\vspace{-4ex}
+	\fi
+\fi
+
+\ifnum\llncs=0
+	\ifnum\anonymous=0
+		\newcommand{\email}[1]{
+			\texttt{
+				\ifx\contactmail\empty
+					#1
+				\else
+					\href{mailto:\contactmail}{#1}
+				\fi
+			}
+		}
+		\newcommand{\and}{}
+		\ifnum\stuffedtitlepage=1
+			\ifnum\llncs=0
+				\vspace{-2ex}
+			\fi
+		\fi
+		\begin{small}
+			\begin{center}
+				\global \institutecounter 1
+				\provideinstitutes
+			\end{center}
+		\end{small}
+	\fi
+\fi
+
+\ifnum\stuffedtitlepage=1
+	\ifnum\llncs=1
+		\vspace*{-4ex}
+	\else
+		\vspace*{-2ex}
+	\fi
+\fi
+\ifnum\llncs=1
+\begin{abstract}
+	\abstracttext
+	\vspace{1ex}
+
+	\textbf{Keywords\ifnum\llncs=1{.}\else{:}\fi} \keywords
+\end{abstract}
+\fi
+\ifnum\stuffedtitlepage=1
+	\ifnum\llncs=1
+		\vspace*{-2ex}
+	\fi
+\fi
+
+\ifnum\llncs=0
+	\vspace{1ex}
+\fi
+
+\ifx\choosepubinfo\empty\else
+	\ifnum\choosepubinfo=1
+	\def\pubinfo{\small
+			\noindent \copyright\ IACR 
+			\ifx\pubinfoYEAR\empty \textcolor{red}{year missing}\else \pubinfoYEAR\fi.
+			This article is a minor revision of the version published by Springer-Verlag in the proceedings of \ifx\pubinfoCONFERENCE\empty \textcolor{red}{conference missing}\else \pubinfoCONFERENCE\fi, eventually available at \url{http://link.springer.com}
+	}
+	\fi
+	
+	\ifnum\choosepubinfo=2
+		\def\pubinfo{\small
+			\noindent \copyright\ IACR 
+			\ifx\pubinfoYEAR\empty \textcolor{red}{year missing}\else \pubinfoYEAR\fi.
+			This article is the final version submitted by the author(s) to the IACR and to Springer-Verlag on
+			\ifx\pubinfoSUBMISSIONDATE\empty \textcolor{red}{submission date missing}\else \pubinfoSUBMISSIONDATE\fi.
+			The version published by Springer-Verlag is available at
+			\ifx\pubinfoDOI\empty \textcolor{red}{DOI missing}\else \pubinfoDOI\fi.
+		}
+	\fi
+	
+	\ifnum\choosepubinfo=3
+		\def\pubinfo{\small
+			\noindent \copyright\ IACR
+			\ifx\pubinfoYEAR\empty \textcolor{red}{year missing}\else \pubinfoYEAR\fi.
+			This article is a minor revision of the version published by Springer-Verlag available at
+			\ifx\pubinfoDOI\empty \textcolor{red}{DOI missing}\else \pubinfoDOI\fi.
+		}
+	\fi
+	
+	\ifnum\choosepubinfo=4
+		\def\pubinfo{\small
+			\noindent This article is based on an earlier article:
+			\ifx\pubinfoBIBDATA\empty \textcolor{red}{bibliographic data missing}\else \pubinfoBIBDATA\fi,
+			\copyright\ IACR
+			\ifx\pubinfoYEAR\empty \textcolor{red}{year missing}\else \pubinfoYEAR\fi,
+			\ifx\pubinfoDOI\empty \textcolor{red}{DOI missing}\else \pubinfoDOI\fi.
+		}
+	\fi
+	
+	\ifnum\choosepubinfo=5
+			\def\pubinfo{\small
+				\noindent \pubinfoindividual
+			}
+		\fi
+\fi
+
+\textblockorigin{0.5\paperwidth}{0.9\paperheight}
+\setlength{\TPHorizModule}{\textwidth}
+
+\newlength{\pubinfolength}
+\ifx\choosepubinfo\empty\else
+	\ifnum\choosepubinfo=0
+	\else
+		\settowidth{\pubinfolength}{\pubinfo}
+		\begin{textblock}{1}[0.5,0](0,.25)
+			 \ifnum\pubinfolength<\textwidth
+				\centering
+			\fi
+			\pubinfo
+		\end{textblock}
+	\fi
+\fi
+\thispagestyle{empty}

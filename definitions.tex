@@ -1,0 +1,202 @@
+% PLEASE do not change any of the already defined commands in this file. However, feel free to redefine commands or fonts if you feel an urge to do so in files of your own.
+
+% If you want to define a new command for every lower (resp. upper) case latin character, add it to the group of instructions in lines 6-10, (resp. 14-15). Note that cal, adv, frak, bb, bf (resp. frak, bf) are already defined for all lower (resp. upper) case characters.
+
+\def\makeuppercase#1{
+\expandafter\newcommand\csname cal#1\endcsname{\mathcal{#1}}
+\expandafter\newcommand\csname adv#1\endcsname{\mathcal{#1}}
+\expandafter\newcommand\csname frak#1\endcsname{\mathfrak{#1}}
+\expandafter\newcommand\csname bb#1\endcsname{\mathbb{#1}}
+\expandafter\newcommand\csname bf#1\endcsname{\textbf{#1}}
+}
+
+\def\makelowercase#1{
+\expandafter\newcommand\csname frak#1\endcsname{\mathfrak{#1}}
+\expandafter\newcommand\csname bf#1\endcsname{\textbf{#1}}
+}
+
+\newcounter{char}
+\setcounter{char}{1}
+
+\loop
+	\edef\letter{\alph{char}}
+	\edef\Letter{\Alph{char}}
+	\expandafter\makelowercase\letter
+	\expandafter\makeuppercase\Letter
+	\stepcounter{char}
+	\unless\ifnum\thechar>26
+\repeat
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%     PLEASE CONSIDER STICKING TO THE STYLE FORCED UPON YOU BY THE FOLLOWING COMMANDS
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\DeclareMathAlphabet{\mathsc}{OT1}{cmr}{m}{sc}
+
+%%% PUBLIC KEY ENCRYPTION %%%
+\newcommand{\PKE}{\textsf{PKE}}
+
+\newcommand{\PKEGen}{\mathsf{Gen}}
+\newcommand{\PKEEnc}{\mathsf{Enc}}
+\newcommand{\PKEDec}{\mathsf{Dec}}
+
+\newcommand{\PKEGenO}{\mathsc{Gen}} % in case you want to distinguish between an algorithm (here: in mathsf) and an oracle providing access to it.
+\newcommand{\PKEEncO}{\mathsc{Enc}}
+\newcommand{\PKEDecO}{\mathsc{Dec}}
+
+\newcommand{\pk}{\mathit{pk}}
+\newcommand{\sk}{\mathit{sk}}
+
+
+%%% GAMES %%%
+\newcommand{\INDCPA}{\mathsf{IND\text{-}CPA}}
+\newcommand{\INDCCA}{\mathsf{IND\text{-}CCA}}
+
+%%% SETS, SAMPLING %%%
+\newcommand\bits{\{0,1\}}
+\newcommand\cross{\times}
+
+\newcommand\N{\bbN}
+\newcommand\Q{\bbQ}
+\newcommand\R{\bbR}
+\newcommand\Z{\bbZ}
+
+\newcommand\Zp{\bbZ_p}
+\newcommand\Zq{\bbZ_q}
+\newcommand\Zn{\bbZ_n}
+\newcommand\ZN{\bbZ_N}
+\newcommand\Fp{\bbF_p}
+
+%%% MISC %%%
+
+\newcommand{\tuple}[1]{\langle{#1}\rangle}
+\newcommand{\xor}{\oplus}
+
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\abs}[1]{\left| #1 \right|}
+
+\newcommand{\pr}[2][]{\Pr_{#1}\mathopen{}\left[#2\right]\mathclose{}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%     MISC
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\heading}[1]{{\vspace{1ex}\noindent\sc{#1}}}
+\newcommand{\comment}{/\!\!/\,}
+\mathchardef\hyphen="2D
+\newcommand{\etal}{et~al.\@}
+% `:=' looks ugly in LaTeX. The following code replaces it by a symmetric version of :=
+% Simply keep using := as before.
+\mathchardef\ordinarycolon\mathcode`\:
+\mathcode`\:=\string"8000
+\begingroup \catcode`\:=\active
+  \gdef:{\mathrel{\mathop\ordinarycolon}}
+\endgroup
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%     COMMANDS FOR SEQUENCES OF GAMES
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\newsequenceofgames}[1]{
+  \newcounter{#1}
+  \setcounter{#1}{-1}
+  \def\sequencename{#1}
+
+  \ifx \GameID \undefined
+    \newcommand{\GameID}{#1}
+  \else
+    \renewcommand{\GameID}{#1}
+  \fi
+
+  \ifx \PrevLabel \undefined
+    \newcommand{\PrevLabel}{\GameID.NULL}
+  \else
+    \renewcommand{\PrevLabel}{\GameID.NULL}
+  \fi
+
+  \ifx \ThisLabel \undefined
+    \newcommand{\ThisLabel}{\GameID.NULL}
+  \else
+    \renewcommand{\ThisLabel}{\GameID.NULL}
+  \fi
+}
+
+\newcommand{\nextgame}[1]{
+  \let\PrevLabel\ThisLabel
+  \renewcommand{\ThisLabel}{\GameID.#1}
+  \refstepcounter{\GameID}\label{\GameID.#1}
+  \paragraph{Experiment~$\mathsf{Exp}_\arabic{\GameID}.$}
+}
+
+\newcommand{\nextgamewithref}[2]{
+  \let\PrevLabel\ThisLabel
+  \renewcommand{\ThisLabel}{\GameID.#1}
+  \refstepcounter{\GameID}\label{\GameID.#1}
+  \paragraph{Game~\hyperref[#2]{$\mathsf{G}_\arabic{\GameID}.$}}
+}
+
+\newcommand{\gameref}[1]{%
+{\hyperref[\sequencename.#1]{\mathsf{G}_{\ref{\sequencename.#1}}}}
+}
+
+\newcommand{\gamerefA}[1]{%
+{\hyperref[\sequencename.#1]{\mathsf{G}^{\advA}_{\ref{\sequencename.#1}}}}
+}
+
+\newcommand{\gamedelta}[2]{%
+\left|\Pr\left[\gamerefA{#1}\Rightarrow 1\right]-\Pr\left[\gamerefA{#2}\Rightarrow 1\right]\right|
+}
+
+\newcommand{\gameequal}[2]{%
+\Pr\left[\gamerefA{#1}\Rightarrow 1\right]=\Pr\left[\gamerefA{#2}\Rightarrow 1\right]
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%     SOME COMMANDS FOR PSEUDOCODE
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% most of the commands are still in nicodemus.sty. However, e.g. texstudio will not allow for autocompletion of commands in nicodemus.sty :-/
+
+\newenvironment{nicodemus}[1][\thenicolinenr]{%  % parameter controls initial line number
+\begin{enumerate}[
+topsep=0ex,
+label=\nicolinenrformat\PaddingUp*,
+ref=\nicorefprefix\PaddingUp*,
+align=right,
+leftmargin=0em,
+itemindent=!,
+labelindent=0em,
+labelwidth=\nicolinenrwidth,
+labelsep=\nicolinenrsep,
+listparindent=\parindent,
+noitemsep,
+]%
+\setcounter{enumi}{#1}%
+\addtocounter{enumi}{-1}%
+}{%
+\end{enumerate}%
+\addtocounter{enumi}{1}%
+\setcounter{nicolinenr}{\theenumi}%
+}
+
+\newcommand{\nicoplus}{%
+  \addtolength{\itemindent}{1em}%
+  \addtolength{\labelsep}{1em}%
+}
+\newcommand{\nicominus}{%
+  \addtolength{\itemindent}{-1em}%
+  \addtolength{\labelsep}{-1em}%
+}
+

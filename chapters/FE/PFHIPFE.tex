@@ -1,0 +1,27 @@
+\subsection{Definition}
+
+\begin{definition}[Partially Function-Hiding $\IPFE$~\cite{PKC:Gay20}]
+    A partially function-hiding functional encryption for inner products ($\PFHIPFE$) consists of the following $\PPT$ algorithms:
+    \begin{itemize}
+        \item $\Setup(\secparam, [\mat{M}]_1) \to (\pk, \msk):$ returns the public key $\pk$, and the master secret key $\msk$. We assume that $\pk$ contains a hiding function $\hidef$ and a tag space $\TagSpace$. Notice that the hiding function is a one-way function, which is used to hide some information of the function.
+        \item $\Enc(\vec{t}, \Tag \in \TagSpace) \to \ct_{\hidef(\vec{t})}:$ returns a ciphertext $\ct_{\hidef(\vec{t})}$ associated with the output of the hiding function $\hidef(\vec{t})$ and tag $\Tag$.
+        \item $\SimEnc(\msk, \vec{x}, \Tag \in \TagSpace) \to \ct_{\vec{x}}:$ returns a ciphertext $\ct_{\vec{x}}$ associated with vector $\vec{x}$ and tag $\Tag$.
+        \item $\KeyGen(\msk, \vec{y}) \to \sk_{\vec{y}}:$ returns a secret key $\sk_{\vec{y}}$ associated with $\vec{y}$.
+        \item $\Dec(\tau, \ct_{\vec{x}}, \sk_{\vec{y}}) \to \res:$ returns the result of $\res := \vec{x}^\Tran \vec{y}$.
+    \end{itemize}
+\end{definition}
+
+\begin{definition}[Correctness]
+    A $\PFHIPFE$ is correct, if for all $\vec{t}, \vec{y}, \tau$, we have
+    \begin{align*}
+        \condprob{\Dec(\tau, \ct_{\hidef(\vec{t})}, \sk_{\vec{y}})}{\begin{array}{l}
+            (\pk, \msk)\getsr \Setup(\secparam, \hidef)\\
+            \ct_{\hidef(\vec{t})} \getsr \Enc(\vec{t}, \tau)\\
+            \sk_{\vec{y}} \getsr \KeyGen(\msk, \vec{y})
+            \end{array}} &= 1
+    \end{align*} 
+\end{definition}
+
+\begin{definition}[Security]
+    We define the simulation security for partially function-hiding inner-product $\FE$, which capture the idea that the only leaked information from $\ct_{\vec{x}}$ and $\sk_{\vec{y}}$ is the inner-product $\vec{x}^\Tran \vec{y}$.
+\end{definition}

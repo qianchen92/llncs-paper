@@ -1,0 +1,255 @@
+% --- -----------------------------------------------------------------
+% --- Please carefully check these flags.
+% --- If you submit, set `submission' to 1, if you are required to submit in lncs style,
+% --- set `llncs' to 1, if your submission has to be anonymous, set `anonymous' to 1.
+% --- -----------------------------------------------------------------
+\def\submission{0}				% 1 = deactivates: pagebackref, colour of links, authnotes
+\def\llncs{1}					% Documentclass: 1 = llncs, 0 = book.
+\def\llncsqedsymbol{1}			% Adds a QED symbol to all proof environments when llncs=1
+\def\anonymous{0}				% 0 = non-anonymous, 1 = anonymous. No notes, authors, institutes
+% ---------------------------------------------------------------------
+\def\acknowledgments{0}			% 0 = off, 1 = on. Auto-0 for anonymous = 1.
+\def\pagelimit{}				% Set to n for warnings on pages n' > n. Empty -> no warning
+\def\papertype{0}				% 0 = A4, 1 = letter. Auto-1 for llncs = 1.
+\def\fullpage{1}				% 0 = off, 1 = on. Auto-0 for llncs = 1.
+% ---------------------------------------------------------------------
+\def\LNCSpreview{0}				% Sets llncs=1, paper cropped to LNCS size.
+\def\overflow{1}				% Show overfull lines
+\def\showlabels{0}				% Show all defined labels and references.
+\def\authnotes{1}				% 0 hides TODO, NEW, ALERT and authnotes.
+								% Auto-0 for anonymous = 1.
+\def\dieordollar{0}				% Modifies \getsr. Choose from {0,1,2}.
+\def\choosebibstyle{alpha}		% Enter your bib style here. Wipe temp files after switch.
+								% auto-splncs03 when llncs=1.
+% ---------------------------------------------------------------------
+\ifnum\LNCSpreview=1
+	\def\llncs{1}
+\fi
+
+\ifnum\llncs=1
+	\documentclass[runningheads,orivec]{llncs}
+\else
+	\ifnum\papertype=0
+		\documentclass[a4paper,10pt,draft]{paper}
+	\else
+		\documentclass[letterpaper,10pt,draft]{paper}
+	\fi
+
+	\ifnum\fullpage=1
+		\usepackage{fullpage}
+	\fi
+\fi
+
+% --- -----------------------------------------------------------------
+% --- Some options for last-minute space saving.
+% --- -----------------------------------------------------------------
+\def\stuffedtitlepage{0}		% CHEATING: NOT LNCS anymore. Removes spaces from the title page
+\def\abbrevref{0}				% Abbreviate enviroment names when referencing
+\def\allowbreaks{0}				% Allow LaTeX to pagebreak in displaymode
+
+% --- -----------------------------------------------------------------
+% --- Title, short Title and date go here.
+% --- -----------------------------------------------------------------
+\def\titletext{%				% Put your paper title here
+	Draft
+}
+\def\runningtitle{%				% Only for llncs = 1. Used for LNCS runningtitle.
+	short title of your paper here
+}
+
+\date{\today}					% Only for llncs = 0. Leave blank for no date.
+
+% ---------------------------------------------------------------------
+% --- Publication information (1-4 tied to SPRINGER)
+% --- -----------------------------------------------------------------
+
+								% Pubinfo turned off for LNCSpreview=1
+\def\choosepubinfo{0}			% 0 : no publication info.
+								% 1 : cameraready. Proceedings not yet published
+								% 2 : cameraready. Proceedings already published
+								% 3 : <  25% new content comp. to published version
+								% 4 : >= 25% new content comp. to published version
+								% 5 : individual text
+
+\def\pubinfoYEAR{}				% year of publication for \pubinfoselect = 2, 3, 4
+\def\pubinfoSUBMISSIONDATE{}	% date of submission to IACR for \pubinfoselect=2
+\def\pubinfoDOI{}				% DOI of publication for \pubinfoselect = 2, 3, 4
+\def\pubinfoBIBDATA{}			% bibliographic data for \pubinfoselect = 3, 4
+\def\pubinfoCONFERENCE{}		% conference for \pubinfoselect=1
+
+\def\pubinfoEPRINT{}			% EPRINT number of your publication
+\def\pubinfoindividual{%
+	place your individual publication text here
+}
+
+% ------------- Please do not touch this block of code ----------------
+\makeatletter
+\expandafter\newcommand{\createauthor}[5]{%
+	\@namedef{#1name}{#2}%
+	\@namedef{#1running}{#3}%
+	\@namedef{#1institute}{#4}%
+	\@namedef{#1thanks}{#5}%
+}
+\expandafter\newcommand{\createinstitute}[4]{%
+	\@namedef{#1instname}{#2}%
+	\@namedef{#1mail}{#3}%
+	\@namedef{#1number}{#4}%
+}
+\makeatother
+\newcounter{authorcount}
+\newcommand{\newauthor}[4]{
+	\stepcounter{authorcount}
+	\createauthor{\theauthorcount}{#1}{#2}{#3}{#4}
+}
+\newcounter{institutecount}
+\newcommand{\newinstitute}[3]{
+	\stepcounter{institutecount}
+	\createinstitute{\theinstitutecount}{#1}{#2}{#3}
+}
+% --- -----------------------------------------------------------------
+% --- The authors go here. Please provide the information as
+% ---
+% --- \newauthor{First Last}{F. Last}{Institute number}{Footnote text}
+% ---
+% --- F. Last is used for LNCS runningauthors.
+% --- Please always provide four (possibly empty) arguments.
+% --- -----------------------------------------------------------------
+\usepackage{orcidlink}
+%\newauthor{Chen~Qain~\orcidlink{0000-0003-4429-7267}}{F.~Author}{}{}
+%\newauthor{Second~Author}{S.~Author}{221b}{}
+%\newauthor{Third~Author}{T.~Author}{0815}{}
+
+% --- -----------------------------------------------------------------
+% --- The institues go here. Please provide the information as
+% ---
+% --- \newinstitute{Institute's name}{emails of authors}{Institute number}.
+% ---
+% --- email is automatically set in teletype.
+% --- Institute number only relevant for llncs=0.
+% ---
+% --- Please always provide three (possibly empty) arguments.
+% --- Do not switch to math mode for the institute number/character.
+% ---
+% --- To suppress 'No institute given' when llncs = 1, use: \newinstitute{}{}{}.
+% --- -----------------------------------------------------------------
+
+%\newinstitute{ABC}{all@abc.org}{10}
+%\newinstitute{DEF}{all@def.org}{11}
+%\newinstitute{HGI}{all@hgi.org}{12}
+
+% --- -----------------------------------------------------------------
+% --- If you want to have a certain mail as contact mail, put it here.
+% --- Emails will be clickable and link to mailto:\contactmail.
+% --- -----------------------------------------------------------------
+
+\def\contactmail{%
+	mail here
+}
+
+% --- -----------------------------------------------------------------
+% --- Abstract and Keywords go here
+% --- -----------------------------------------------------------------
+
+\def\abstracttext{%
+	abstract here
+}
+
+\def\keywords{%
+	keywords here
+}
+
+% --- -----------------------------------------------------------------
+% --- Add your acknowledgments here
+% --- -----------------------------------------------------------------
+
+\def\acknowledgmenttext{
+	acknowledgments here
+}
+
+% ------------- Please do not touch this block of code ----------------
+\usepackage{amsmath,amssymb,amsfonts}
+\ifnum\llncs=0\usepackage{amsthm}\fi
+%\usepackage[dvipsnames]{xcolor} % always before tikz
+%\usepackage{tikz}
+% ---------------------------------------------------------------------
+\input{additional}
+\input{commands/commands.tex}
+%Do not need that due to our own macros
+%\input{definitions}
+% ---------------------------------------------------------------------
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[final]{microtype}
+% --- -----------------------------------------------------------------
+% --- Add your required packages here.
+% --- -----------------------------------------------------------------
+\usepackage{macros}
+%\usepackage[lambda]{cryptocode}
+\usepackage{pseudocodemacros}
+\input{commands/packages.tex}
+% --- Your package
+% --- Your package
+
+% ---------------------------------------------------------------------
+% -------------         DOCUMENT BEGINS HERE          -----------------
+% ---------------------------------------------------------------------
+
+\begin{document}
+\input{titlepage}
+
+% --- -----------------------------------------------------------------
+% --- Add your content here
+% --- -----------------------------------------------------------------
+
+
+% --- -----------------------------------------------------------------
+% --- Put your bibliography files here
+% --- -----------------------------------------------------------------
+
+\bibliography{%	Please make sure you have no blanks left in here!
+%	first file,second file, ... %
+	cryptobib/abbrev0,cryptobib/crypto% Uncomment this line after adding the cryptobib submodule to use cryptobib.
+}
+
+% ------------- Please do not touch this block of code ----------------
+\checkfornotes
+\ifnum\anonymous=0
+	\ifnum\acknowledgments=1
+		\paragraph{Acknowledgments}
+		\acknowledgmenttext
+	\fi
+\fi
+\ifnum\llncs=1
+	\bibliographystyle{splncs03}
+\else
+	\bibliographystyle{\choosebibstyle}
+\fi
+\appendix
+
+% --- -----------------------------------------------------------------
+% --- The Appendix starts here
+% --- -----------------------------------------------------------------
+
+%\section{Appendix}
+
+% --- -----------------------------------------------------------------
+% --- Add your content to be appended here
+% --- -----------------------------------------------------------------
+
+% If you use cleveref (as you do by default) and are required to rename
+% the appendix (e.g. 'supplementary material'), use
+% \crefname{appendix}{Supplementary Material}{Supplementary Material}
+% syntax is \crefname{appendix}{new name singular}{new name plural}
+
+\end{document}
+
+% ---------------------------------------------------------------------
+% ---------------          DOCUMENT ENDS HERE           ---------------
+% ---------------------------------------------------------------------
+
+% --- -----------------------------------------------------------------
+% --- Almost completely rewritten template with vast improvements
+% --- compared to the old version. Please feel free to contact me
+% --- with feedback or questions felix.heuer@rub.de.
+% --- -----------------------------------------------------------------

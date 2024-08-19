@@ -1,0 +1,144 @@
+\authnote{Felix}{
+Please have a look at \emph{already defined commands} in \texttt{definitions.tex}, in particular roughly lines 30 -- 80. To obstruct modification of commands \texttt{testequal}: $\testequal$ and \texttt{getsr}: $\getsr$, their definitions are hidden at the end of \texttt{additional.tex}.}
+
+\todo{Please read this.}
+\verb|main.tex| should be self-explanatory (iff you read it...) Please do not touch the files \verb|additional.tex| or \verb|titlepage.tex|.
+
+\new{cleveref:} Wherever  you  would  previously  have  used \textbackslash\verb|ref|
+, use \textbackslash\verb|cref| instead. Cleveref will detect what you refer to and name it accordingly. To typeset a reference range, use \textbackslash\verb|crefrange|.
+
+If you want to refer to multiple things at once, you can simply  throw  them  all  into  one  reference, e.g. \textbackslash\verb|cref{eq2,eq5,eq1,thm2,def1}|. If you want a page  reference,  use \textbackslash\verb|cpageref|, for a page range, use \textbackslash\verb|cpagerefrange|, and if you want to refer to multiple pages, simply throw them all into a single \textbackslash\verb|cpageref|.\medskip
+
+All commands for the environments theorem, lemma, corollary, proposition, definition, claim, remark, example, note, conjecture, assumption, observation, fact, construction may be abbreviated to its first four characters. Some additional abbreviations are defined along: \textbackslash\verb|thm|, \textbackslash\verb|lem|, \textbackslash\verb|cor|, \textbackslash\verb|defn|, \textbackslash\verb|rem|, \textbackslash\verb|fct|.
+
+\heading{One more thing}
+Some folks consider LaTeX paragraphs (in non-LNCS) to heavy. Maybe you want to consider \verb|\heading|.\medskip
+
+\section{Pseudocode and Games}
+The highly acclaimed [citation needed] nicodemus package for pseudocode by Bertram has been added. \cref{figure} should be self-explanatory. To reset the line numbering use \verb|nicoresetlinenr|. To set the line number use \verb|nicosetlinenr|. You may use labels for individual lines, e.g. see line \ref{line}. Careful, \verb|cref| does not work as expected as it will display `item' instead of `line'. :-(
+
+Indentation of \verb|nicoplus| is one \verb|quad|. To create a line without numbering, use \verb|\item[]|.
+\newsequenceofgames{demo} %only relevant for the macros for sequences of games!
+
+\begin{figure}[h]%
+	\centering%
+	\nicoresetlinenr
+	\fbox{%
+		\begin{minipage}[t]{3cm}%
+			\textbf{Oracle} $\PKEGenO$
+			\begin{nicodemus}
+				\item $(\pk,\sk)\gets\PKEGen$ \label{line}
+				\item $\pk\gets 5$
+				\item Return $(\pk,\sk)$
+			\end{nicodemus}
+		\medskip
+			\noindent \textbf{Oracle} $\PKEEncO(m)$
+			\begin{nicodemus}
+				\item Return $m$
+			\end{nicodemus}
+		\end{minipage}
+		\qquad
+		\begin{minipage}[t]{4cm}
+			\textbf{Oracle} $\PKEDecO(c)$
+			\begin{nicodemus}
+				\item if $c=\pk$
+				\nicoplus
+					\item Return $\bot$\hfill \comment $\gameref{first}$
+				\nicominus
+				\item $(\pk',\sk')\getsr\PKEGen$
+				\item Return $\pk'$
+			\end{nicodemus}
+		\end{minipage}
+	}%
+	\caption{Best scheme ever. Literally, the best!}
+	\label{figure}
+\end{figure}
+\begin{figure}[ht!]%
+	\centering%
+	\nicoresetlinenr
+	\fbox{%
+		\begin{minipage}[t]{3cm}%
+			\begin{nicodemus}
+				\item 
+			\end{nicodemus}
+		\medskip
+			\noindent \textbf{Oracle} 
+			\begin{nicodemus}
+				\item 
+			\end{nicodemus}
+		\end{minipage}
+		\qquad
+		\begin{minipage}[t]{4cm}
+			\textbf{Oracle} 
+			\begin{nicodemus}
+				\item 
+			\end{nicodemus}
+		\end{minipage}
+	}%
+	\caption{Best simple scheme ever. Literally, the best!}
+	\label{simple-figure}
+\end{figure}
+A set of macros for sequences of games has been added. To initiate a new sequence of games use \verb|\newsequenceofgames{sequencename}|.
+\begin{itemize}
+\item \verb|\nextgame{gameref}|\\
+To introduce a new game where \verb|gameref| is an internal name you use to refer to the game.
+\item \verb|\nextgamewithref{gameref}{label}|\\
+Where gameref is an internal name you use to refer to the game and \verb|label| is a label, e.g. from a figure.
+
+Further you can retrieve the number of game \verb|gameref| by\linebreak\verb|\ref{sequencename.gameref}|
+\item \verb|\gameref{name}|\\
+To refer to game \verb|name|. Look like this: $\gameref{first}$.
+\item \verb|\gamerefA{name}|\\
+To refer to game \verb|name| run with adversary $\advA$. Feel free to adjust the macro. Looks like this:
+$\gamerefA{first}$. Note that for the latter two commands the whole expression is clickable and links to the game's description.
+\item \verb|\gamedelta{gameref#1}{gameref#2}| for
+\[
+\left|\Pr\left[\gamerefA{first}\Rightarrow 1\right]-\Pr\left[\gamerefA{second}\Rightarrow 1\right]\right|\enspace.
+\]
+\item \verb|\gameequal{gameref#1}{gameref#2}| for
+\[
+\Pr\left[\gamerefA{first}\Rightarrow 1\right]=\Pr\left[\gamerefA{second}\Rightarrow 1\right]\enspace.
+\]
+\end{itemize}
+See examples below.
+
+\nextgamewithref{first}{figure} The initial game.
+
+\nextgamewithref{second}{figure} We modify stuff.
+
+\begin{claim}
+$\gameequal{first}{second}$.
+\end{claim}
+
+\section{Cryptobib}
+tl;dr: run this in the repo root and add the cryptobib line to \verb|\bibliography{}|.
+\begin{tiny}
+\begin{verbatim}
+	if git rev-parse --git-dir > /dev/null 2>&1; then git submodule add https://github.com/cryptobib/export cryptobib; cd cryptobib &&
+	git pull origin master && git submodule update --init . && cd ..; else echo "Error: this is not a valid git repository."; fi
+\end{verbatim}
+\end{tiny}
+
+To set up cryptobib you can use the following commands.
+\begin{verbatim}
+	# add the submodule:
+	git submodule add https://github.com/cryptobib/export cryptobib
+	# change directory to cryptobib folder and update content:
+	cd cryptobib && git pull origin master;
+	# automatically retrieve submodule commits after clone or pull
+	git submodule update --init;
+\end{verbatim}
+
+Additionally you must add the bibliography file in your \LaTeX{} document.
+To do this open the file \verb|main.tex| in your editor and uncomment the lines starting with \verb|%\bibliography{|, \verb|%cryptobib/abbrev0,cryptobib/crypto| and the line immediately following, \verb|%}|.
+
+\section{Changelog}
+
+
+- 19.05.17: nicodemus package for pseudocode and macros for sequences of games added
+
+\noindent - 19.06.17: instructions how to use cryptobib as a git submodule added
+
+\noindent - 27.09.17: Moved definition of document class up to forestall errors due to document class specific commands used before definition of the class
+
+Acknowledgments are a paragraph rather than a section now
